@@ -81,3 +81,143 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
     resetToken,
   });
 });
+
+
+exports.resetPassword  = catchAsyncError(async (req, res, next) => {
+  //creating token hash
+  const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if(!user) {
+    return next(new ErrorHander("Password reset token is invalid or has been expired", 400));
+  }
+
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new ErrorHander("Password does not match", 400));
+  }
+
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+
+  await user.save();
+
+  sendToken(user, 200, res);
+
+});
+
+//Getting User Details
+exports.getUserDetails = catchAsyncError( async(req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  if(!user) {
+    return next(new ErrorHander("User not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    user
+  });
+});
+
+//Update User Password
+exports.updatePassword = catchAsyncError( async(req, res, next) => {
+  const user = await User.findById(req.user.id).select("+password");
+
+  const isPasswordMatched = user.comparePassword(req.body.oldPassword);
+
+  if(!isPasswordMatched) {
+    return next(new ErrorHander("Old password is incorrect", 400));
+  }
+
+  if(req.body.newPassword !== req.body.confirmPassword) {
+    return next(new ErrorHander("Password does not match", 400));
+  }
+
+  user.password = req.body.newPassword;
+  await user.save();
+  sendToken(user, 200, res);
+});
+
+//Update User profile
+exports.updateUserDetails = catchAsyncError( async(req, res, next) => {
+  const updateUserObj = {
+    name:req.body.name,
+    email:req.body.email,
+  }
+  //will add cloudinary later
+  const user = await User.findByIdAndUpdate(req.user.id, updateUserObj, {
+    new:true,
+    runValidators:true,
+    useFindAndModify:false
+  });
+  res.status(200).json({
+    success: true,
+    user
+  });
+});
+
+/*All the user accessed by admin */
+//Get all users
+exports.getAllUsers = catchAsyncError( async(req, res, next) => {
+  const users = await User.find();
+
+  res.status(200).json({
+    success: true,
+    users
+  });
+});
+
+//Get User details by id
+exports.getSingleUser = catchAsyncError( async(req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if(!user) {
+    return next(new ErrorHander("User not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    user
+  });
+});
+
+//Update user role --admin
+exports.updateUserRole = catchAsyncError( async(req, res, next) => {
+  const updateUserObj = {
+    name:req.body.name,
+    email:req.body.email,
+    role:req.body.role
+  }
+  //will add cloudinary later
+  const user = await User.findByIdAndUpdate(req.params.id, updateUserObj, {
+    new:true,
+    runValidators:true,
+    useFindAndModify:false
+  });
+  res.status(200).json({
+    success: true,
+    user
+  });
+});
+
+//Deleting a user
+exports.deleteUser = catchAsyncError( async(req, res, next) => {
+  const user = await User.findById(req.params.id);
+  //will remove cloudinary later
+  if(!user) {
+    return next(new ErrorHander("User not found", 404));
+  }
+
+  await user.remove();
+
+  res.status(200).json({
+    success: true,
+    message: "User deleted successfully"
+  });
+});
+
