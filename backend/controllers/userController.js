@@ -174,7 +174,7 @@ exports.getAllUsers = catchAsyncError( async(req, res, next) => {
 
 //Get User details by id
 exports.getSingleUser = catchAsyncError( async(req, res, next) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params._id);
 
   if(!user) {
     return next(new ErrorHander("User not found", 404));
@@ -194,7 +194,7 @@ exports.updateUserRole = catchAsyncError( async(req, res, next) => {
     role:req.body.role
   }
   //will add cloudinary later
-  const user = await User.findByIdAndUpdate(req.params.id, updateUserObj, {
+  const user = await User.findByIdAndUpdate(req.params._id, updateUserObj, {
     new:true,
     runValidators:true,
     useFindAndModify:false
@@ -207,7 +207,9 @@ exports.updateUserRole = catchAsyncError( async(req, res, next) => {
 
 //Deleting a user
 exports.deleteUser = catchAsyncError( async(req, res, next) => {
-  const user = await User.findById(req.params.id);
+  console.log(req);
+  const user = await User.findById(req.params._id);
+  console.log(req.params.id);
   //will remove cloudinary later
   if(!user) {
     return next(new ErrorHander("User not found", 404));
