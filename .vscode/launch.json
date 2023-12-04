@@ -12,6 +12,15 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/backend/server.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Frontend",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/frontend/src/index.js"
         }
     ]
 }
