@@ -9,27 +9,26 @@ import { useAlert } from "react-alert";
 import Pagination from "react-js-pagination";
 import Slider from "@material-ui/core/Slider";
 import Typography from "@material-ui/core/Typography";
+import MetaData from "../layout/MetaData";
 
 const categories = [
-  "Electronics",
-  "Cameras",
   "Laptop",
-  "Accessories",
-  "Headphones",
-  "Food",
-  "Books",
-  "Clothes/Shoes",
-  "Beauty/Health",
-  "Sports",
-  "Outdoor",
+  "Footwear",
+  "Bottom",
+  "Tops",
+  "Attire",
+  "Camera",
+  "SmartPhones",
 ];
+
 
 const Products = () => {
   const dispatch = useDispatch();
   const alert = useAlert();
   const [currentPage, setCurrentPage] = useState(1);
-  const [price, setPrice] = useState([0, 10000]);
-  const [category, setCategory] = useState([""]);
+  const [price, setPrice] = useState([0, 1000000]);
+  const [ratings, setRatings] = useState(0);
+  const [category, setCategory] = useState("");
   const {
     products,
     loading,
@@ -50,8 +49,8 @@ const Products = () => {
       alert.error(errors);
       dispatch(clearErrors());
     }
-    dispatch(getProducts(keyword, currentPage, price));
-  }, [dispatch, errors, alert, keyword, currentPage, price]);
+    dispatch(getProducts(keyword, currentPage, price, ratings, category));
+  }, [dispatch, errors, alert, keyword, currentPage, price, ratings, category]);
   let count = filteredProductsCount;
 
   return (
@@ -60,6 +59,7 @@ const Products = () => {
         <Loader />
       ) : (
         <Fragment>
+          <MetaData title={`${keyword}`} />
           <h2 className="productsHeading">Products</h2>
           <div className="products">
             {products &&
@@ -76,7 +76,7 @@ const Products = () => {
               valueLabelDisplay="auto"
               aria-labelledby="range-slider"
               min={0}
-              max={10000}
+              max={1000000}
             />
             <Typography>Category</Typography>
             <ul className="categoryBox">
@@ -90,11 +90,24 @@ const Products = () => {
                 </li>
               ))}
             </ul>
+
+            <fieldset>
+              <Typography component="legend">Ratings above</Typography>
+            <Slider
+              value={ratings}
+              onChange={(e, newRating) => {
+                setRatings(newRating);
+              }}
+              aria-labelledby="continuous-slider" 
+              valueLabelDisplay="auto"
+              min={0}
+              max={5} 
+              />
+              </fieldset>
+
           </div>
 
-          {resultPerPage >= count ? (
-            ""
-          ) : (
+          {resultPerPage < count && (
             <div className="paginationBox">
               <Pagination
                 activePage={currentPage}

@@ -6,6 +6,7 @@ import Home from "./components/Home/Home.js";
 import ProductDetails from "./components/Product/ProductDetails.js";
 import Products from "./components/Product/Products.js";
 import Search from "./components/Product/Search.js";
+import Login from "./components/User/Login.js"
 function App() {
   return (
     <Router>
@@ -14,10 +15,12 @@ function App() {
         <Route exact path="/" Component={Home} />
         <Route exact path="/product/:id" Component={ProductDetails} />
         <Route exact path="/products" Component={Products} />
-        <Route path="/products/:keyword" Component={Products} /> // this is for
+        <Route path="/products/:keyword" Component={Products} /> 
+        {/* this is for
         search bar, when we search for a product, it will redirect to
-        '/products/:keyword
+        '/products/:keyword */}
         <Route exact path="/search" Component={Search} />
+        <Route exact path="/login" Component={Login} />
       </Routes>
       <Footer />
     </Router>
