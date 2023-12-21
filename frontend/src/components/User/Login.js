@@ -1,14 +1,15 @@
 import React, { Fragment, useRef, useState, useEffect } from "react";
 import "./Login.css";
 import Loader from "../layout/Loader/Loader.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import FaceIcon from "@material-ui/icons/Face";
 import { useDispatch, useSelector } from "react-redux";
 import { register, login, clearErrors } from "../../actions/userAction.js";
 import { useAlert } from "react-alert";
-const Login = ({history}) => {
+const Login = () => {
+  const navigate = useNavigate();
   const alert = useAlert();
   const dispatch = useDispatch();
   const {error, loading, isAuthenticated, } = useSelector((state) => state.user);
@@ -29,17 +30,17 @@ const Login = ({history}) => {
   
   const {name, email, password} = user;
   
-  const [avatar, setAvatar] = useState('');
-  const [avatarPreview, setAvatarPreview] = useState('/images/Profile.png');
+  const [avtar, setAvtar] = useState('../../images/Profile.png');
+  const [avtarPreview, setAvtarPreview] = useState('../../images/Profile.png');
   useEffect(() => {
     if (error) {
       alert.error(error);
       dispatch(clearErrors());
     }
     if(isAuthenticated){
-      history.push('/account');
+      navigate('/account');
     }
-  }, [dispatch, alert, error, isAuthenticated, history]);
+  }, [dispatch, alert, error, isAuthenticated, navigate]);
   const switchTabs = (e, tab) => {
     if (tab === "login") {
       switcherTabs.current.classList.add("shiftToNeutral");
@@ -66,16 +67,16 @@ const Login = ({history}) => {
     myForm.set('name', name);
     myForm.set('email', email);
     myForm.set('password', password);
-    myForm.set('avatar', avatar);
+    myForm.set('avtar', avtar);
     dispatch(register(myForm));
   };
   const registerDataChange = (e) => {
-    if (e.target.name === 'avatar') {
+    if (e.target.name === 'avtar') {
         const reader = new FileReader();
         reader.onload = () => {
             if (reader.readyState===2) {
-                setAvatarPreview(reader.result);
-                setAvatar(reader.result);
+                setAvtarPreview(reader.result);
+                setAvtar(reader.result);
             }
         }
         reader.readAsDataURL(e.target.files[0]);
@@ -164,10 +165,10 @@ const Login = ({history}) => {
                   />
                 </div>
                 <div id="registerImage">
-                  <img src={avatarPreview} alt="Avatar Preview" />
+                  <img src={avtarPreview} alt="Avatar Preview" />
                   <input
                     type="file"
-                    name="avatar"
+                    name="avtar"
                     accept="image/*"
                     onChange={registerDataChange}
                   />

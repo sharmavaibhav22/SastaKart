@@ -7,6 +7,7 @@ import ProductDetails from "./components/Product/ProductDetails.js";
 import Products from "./components/Product/Products.js";
 import Search from "./components/Product/Search.js";
 import Login from "./components/User/Login.js"
+import User from "./components/User/User.js"
 function App() {
   return (
     <Router>
@@ -21,6 +22,7 @@ function App() {
         '/products/:keyword */}
         <Route exact path="/search" Component={Search} />
         <Route exact path="/login" Component={Login} />
+        <Route exact path="/account" Component={User} />
       </Routes>
       <Footer />
     </Router>

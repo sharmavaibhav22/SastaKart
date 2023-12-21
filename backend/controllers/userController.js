@@ -3,16 +3,23 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 const ErrorHander = require("../utils/errorhander");
 const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
+const cloudinary = require("cloudinary");
 //Registering a user
 exports.registerUser = catchAsyncError(async (req, res, next) => {
+
+  const myCloud = await cloudinary.v2.uploader.upload(req.body.avtar, {
+    folder: "avtars",
+    width:150,
+    crop:"scale"
+  });
   const { name, email, password } = req.body;
   const user = await User.create({
     name,
     email,
     password,
     avtar: {
-      public_id: "this is sample id",
-      url: "profilepictureurl",
+      public_id: myCloud.public_id,
+      url: myCloud.secure_url,
     },
   });
   sendToken(user, 201, res);
