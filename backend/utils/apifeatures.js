@@ -2,6 +2,7 @@ const { remove } = require("../models/productModel");
 
 class ApiFeature {
   constructor(query, queryStr) {
+    //query = Product.find({querystr = name:""});
     this.query = query;
     this.queryStr = queryStr;
   }
